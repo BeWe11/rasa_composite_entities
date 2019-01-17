@@ -45,6 +45,8 @@ Simply add another entry to your training file (in JSON format) defining composi
 ```
 Every word starting with a "@" will be considered a placeholder for an entity with that name. The component is agnostic to the origin of entities, you can use anything that Rasa NLU returns as the "entity" field in its messages. This means that you can not only use the entities defined in your common examples, but also numerical entities from duckling etc.
 
+Longer patterns always take precedence over shorter patterns. If a shorter pattern matches entities that would also be matched by a longer pattern, the shorter pattern is ignored.
+
 ## Explanation
 
 Composite entities act as containers that group several entities into logical units. Consider the following example phrase:
@@ -53,13 +55,13 @@ I am looking for a red shirt with stripes and checkered blue shoes.
 ```
 Properly trained, Rasa NLU could return entities like this:
 ```json
-"entities" : [
+"entities": [
   {
     "start": 19,
     "end": 22,
     "value": "red",
     "entity": "color",
-    "confidence": 0.8356,
+    "confidence": 0.9419322376955782,
     "extractor": "ner_crf"
   },
   {
@@ -67,15 +69,15 @@ Properly trained, Rasa NLU could return entities like this:
     "end": 28,
     "value": "shirt",
     "entity": "product",
-    "confidence": 0.9235,
+    "confidence": 0.9435936216683031,
     "extractor": "ner_crf"
   },
   {
     "start": 34,
     "end": 41,
-    "value": "striped",
+    "value": "stripes",
     "entity": "pattern",
-    "confidence": 0.8962,
+    "confidence": 0.9233923349716401,
     "extractor": "ner_crf"
   },
   {
@@ -83,7 +85,7 @@ Properly trained, Rasa NLU could return entities like this:
     "end": 55,
     "value": "checkered",
     "entity": "pattern",
-    "confidence": 0.9311,
+    "confidence": 0.8877627536275875,
     "extractor": "ner_crf"
   },
   {
@@ -91,15 +93,15 @@ Properly trained, Rasa NLU could return entities like this:
     "end": 60,
     "value": "blue",
     "entity": "color",
-    "confidence": 0.8161,
+    "confidence": 0.6778344517453893,
     "extractor": "ner_crf"
   },
   {
     "start": 61,
     "end": 66,
-    "value": "shoe",
+    "value": "shoes",
     "entity": "product",
-    "confidence": 0.8023,
+    "confidence": 0.536797743231954,
     "extractor": "ner_crf"
   }
 ]
@@ -109,7 +111,7 @@ It's hard to infer exactly what the user is looking for from this output alone. 
 
 By defining common patterns of entity combinations, we can automatically create entity groups. If we add the composite entity patterns as in the usage example above, the output will be changed to this:
 ```json
-"entities" : [
+"entities": [
   {
     "entity": "product_with_attributes",
     "type": "composite",
@@ -119,7 +121,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "end": 22,
         "value": "red",
         "entity": "color",
-        "confidence": 0.8356,
+        "confidence": 0.9419322376955782,
         "extractor": "ner_crf",
         "type": "basic"
       },
@@ -128,19 +130,19 @@ By defining common patterns of entity combinations, we can automatically create 
         "end": 28,
         "value": "shirt",
         "entity": "product",
-        "confidence": 0.9235,
+        "confidence": 0.9435936216683031,
         "extractor": "ner_crf",
         "type": "basic"
       },
       {
         "start": 34,
         "end": 41,
-        "value": "striped",
+        "value": "stripes",
         "entity": "pattern",
-        "confidence": 0.8962,
+        "confidence": 0.9233923349716401,
         "extractor": "ner_crf",
         "type": "basic"
-      },
+      }
     ]
   },
   {
@@ -152,7 +154,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "end": 55,
         "value": "checkered",
         "entity": "pattern",
-        "confidence": 0.9311,
+        "confidence": 0.8877627536275875,
         "extractor": "ner_crf",
         "type": "basic"
       },
@@ -161,16 +163,16 @@ By defining common patterns of entity combinations, we can automatically create 
         "end": 60,
         "value": "blue",
         "entity": "color",
-        "confidence": 0.8161,
+        "confidence": 0.6778344517453893,
         "extractor": "ner_crf",
         "type": "basic"
       },
       {
         "start": 61,
         "end": 66,
-        "value": "shoe",
+        "value": "shoes",
         "entity": "product",
-        "confidence": 0.8023,
+        "confidence": 0.536797743231954,
         "extractor": "ner_crf",
         "type": "basic"
       }
@@ -179,7 +181,7 @@ By defining common patterns of entity combinations, we can automatically create 
 ]
 ```
 
-## Full Example
+## Example
 
 See the `example` folder for a minimal example that can be trained and tested.  To train the model and start the server, run
 ```bash
