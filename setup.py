@@ -1,11 +1,11 @@
-from setuptools import setup
+import setuptools
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="rasa_composite_entities",
-    version="0.0.1",
+    version="0.1.0",
     author="Benjamin Weigang",
     author_email="Benjamin.Weigang@mailbox.org",
     description="A Rasa NLU component for composite entities.",
