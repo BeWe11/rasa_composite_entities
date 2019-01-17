@@ -1,3 +1,4 @@
+import itertools
 import os
 import re
 import warnings
@@ -105,6 +106,8 @@ class CompositeEntityExtractor(EntityExtractor):
         entities = message.get("entities", [])
         if not entities:
             return
+        for entity in entities:
+            entity['type'] = 'basic'
 
         text_with_entity_names, index_map = \
                 self._replace_entity_values(message.text, entities)
@@ -115,32 +118,32 @@ class CompositeEntityExtractor(EntityExtractor):
             # Sort patterns (longest pattern first) as longer patterns might
             # contain more information
             for pattern in sorted(composite_entity['patterns'], key=len, reverse=True):
-                matched = False
                 for match in re.finditer(pattern, text_with_entity_names):
-                    matched = True
-                    contained_entity_indices += [
+                    contained_in_match = [
                         index for (index, start, end) in index_map
                         if start >= match.start() and end <= match.end()
                     ]
-                # If one pattern has matched, we can ignore the other ones
-                if matched:
-                    break
+                    # If any entity for this match is already in the list, than
+                    # this pattern is a subset of a previous (larger) pattern
+                    # and we can ignore it.
+                    all_indices = set(itertools.chain.from_iterable(
+                            contained_entity_indices))
+                    if all_indices & set(contained_in_match):
+                        continue
+                    contained_entity_indices.append(contained_in_match)
             if not contained_entity_indices:
                 continue
-            # We sort the indices in reverse order so that we don't introduce
-            # index shifts while popping elements. Afterwards, we sort again
-            # by order of occurence.
-            indices = sorted(contained_entity_indices, reverse=True)
-            contained_entities = list(sorted(
-                    [entities.pop(i) for i in indices],
-                    key=lambda x: x['start']))
-            processed_composite_entities.append({
-                'entity': composite_entity['name'],
-                'type': 'composite',
-                'contained_entities': contained_entities,
-            })
+            for contained_in_match in contained_entity_indices:
+                contained_entities = list(sorted(
+                        [entities[i] for i in contained_in_match],
+                        key=lambda x: x['start']))
+                processed_composite_entities.append({
+                    'entity': composite_entity['name'],
+                    'type': 'composite',
+                    'contained_entities': contained_entities,
+                })
 
-        for entity in entities:
-            entity['type'] = 'basic'
+        entities = [entity for i, entity in enumerate(entities) if i not in
+                itertools.chain.from_iterable(contained_entity_indices)]
         message.set('entities', entities + processed_composite_entities,
                     add_to_output=True)
