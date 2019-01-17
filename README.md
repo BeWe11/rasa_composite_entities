@@ -1,6 +1,6 @@
 # rasa_composite_entities
 
-A Rasa NLU component for composite entities.
+A Rasa NLU component for composite entities, developed to be used in the Dialogue Engine of [Dialogue Technologies](https://www.dialogue-technologies.com).
 
 ## Installation
 
@@ -45,7 +45,7 @@ Simply add another entry to your training file (in JSON format) defining composi
 ```
 Every word starting with a "@" will be considered a placeholder for an entity with that name. The component is agnostic to the origin of entities, you can use anything that Rasa NLU returns as the "entity" field in its messages. This means that you can not only use the entities defined in your common examples, but also numerical entities from duckling etc.
 
-## Example
+## Explanation
 
 Composite entities act as containers that group several entities into logical units. Consider the following example phrase:
 ```
@@ -107,7 +107,7 @@ Properly trained, Rasa NLU could return entities like this:
 
 It's hard to infer exactly what the user is looking for from this output alone. Is he looking for a striped and checkered shirt? Striped and checkered shoes? Or a striped shirt and checkered shoes?
 
-By defining common patterns of entity combinations, we can automatically create entity groups. If we add the composite entity patterns as in the usage example above, the output will be changed to this: 
+By defining common patterns of entity combinations, we can automatically create entity groups. If we add the composite entity patterns as in the usage example above, the output will be changed to this:
 ```json
 "entities" : [
   {
@@ -179,3 +179,15 @@ By defining common patterns of entity combinations, we can automatically create 
 ]
 ```
 
+## Full Example
+
+See the `example` folder for a minimal example that can be trained and tested.  To train the model and start the server, run
+```bash
+python -m rasa_nlu.train --path . --data train.json --config config_with_composite.yml
+python -m rasa_nlu.server --path . --config config_with_composite.yml
+```
+After training, you can see the composite entities in the output of this command:
+```bash
+curl -XPOST localhost:5000/parse -d '{"q": "I am looking for a red shirt with stripes and checkered blue shoes"}'
+```
+If you want to compare this output to the normal Rasa NLU output, use the alternative `config_without_composite.yml` config file.
