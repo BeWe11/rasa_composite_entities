@@ -191,3 +191,7 @@ After training, you can see the composite entities in the output of this command
 curl -XPOST localhost:5000/parse -d '{"q": "I am looking for a red shirt with stripes and checkered blue shoes"}'
 ```
 If you want to compare this output to the normal Rasa NLU output, use the alternative `config_without_composite.yml` config file.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details.
