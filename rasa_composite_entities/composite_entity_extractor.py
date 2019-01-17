@@ -10,6 +10,7 @@ from rasa_nlu.utils import write_json_to_file
 
 
 COMPOSITE_ENTITIES_FILE_NAME = 'composite_entities.json'
+ENTITY_PREFIX = '@'
 RASA_NLU = 'rasa_nlu'
 
 
@@ -89,7 +90,7 @@ class CompositeEntityExtractor(EntityExtractor):
             # from new positions to entity indices so that we can find entities
             # by refering to positions in this new string
             entity_start = len(new_text)
-            new_text += '@' + current_entity['entity']
+            new_text += ENTITY_PREFIX + current_entity['entity']
             index_map.append((i, entity_start, len(new_text)))
 
             # If there is text after the last entity, include it as well
