@@ -43,7 +43,13 @@ class CompositeEntityExtractor(EntityExtractor):
             file = files[file_index]
             file_content = utils.read_json_file(file)
             rasa_nlu_data = file_content['rasa_nlu_data']
-            composite_entities = rasa_nlu_data['composite_entities']
+            try:
+                composite_entities = rasa_nlu_data['composite_entities']
+            except KeyError:
+                composite_entities = []
+            if not composite_entities:
+                warnings.warn('CompositeEntityExtractor was added to the '
+                        'pipeline but no composite entites have been defined.')
             return composite_entities
 
     def train(self, training_data, cfg, **kwargs):
@@ -114,6 +120,7 @@ class CompositeEntityExtractor(EntityExtractor):
                 self._replace_entity_values(message.text, entities)
 
         processed_composite_entities = []
+        used_entity_indices = []
         for composite_entity in self.composite_entities:
             contained_entity_indices = []
             # Sort patterns (longest pattern first) as longer patterns might
@@ -143,8 +150,10 @@ class CompositeEntityExtractor(EntityExtractor):
                     'type': 'composite',
                     'contained_entities': contained_entities,
                 })
+            used_entity_indices += list(itertools.chain.from_iterable(
+                contained_entity_indices))
 
         entities = [entity for i, entity in enumerate(entities) if i not in
-                itertools.chain.from_iterable(contained_entity_indices)]
+                used_entity_indices]
         message.set('entities', entities + processed_composite_entities,
                     add_to_output=True)
