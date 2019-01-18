@@ -183,19 +183,17 @@ By defining common patterns of entity combinations, we can automatically create 
 
 ## Example
 
-See the `example` folder for a minimal example that can be trained and tested.  To train the model and start the server, run
+See the `example` folder for a minimal example that can be trained and tested. To get the output from above, run:
 ```bash
 $ python -m rasa_nlu.train --path . --data train.json --config config_with_composite.yml
 $ python -m rasa_nlu.server --path . --config config_with_composite.yml
-```
-After training, you can see the composite entities in the output of this command:
-```bash
 $ curl -XPOST localhost:5000/parse -d '{"q": "I am looking for a red shirt with stripes and checkered blue shoes"}'
 ```
 If you want to compare this output to the normal Rasa NLU output, use the alternative `config_without_composite.yml` config file.
 
 The component also works when training using the server API:
 ```bash
+$ python -m rasa_nlu.server --path . --config config_with_composite.yml
 $ curl --request POST --header 'content-type: application/x-yml' --data-binary @train_http.yml --url 'localhost:5000/train?project=test_project'
 $ curl -XPOST localhost:5000/parse -d '{"q": "I am looking for a red shirt with stripes and checkered blue shoes", "project": "test_project"}'
 ```
