@@ -1,6 +1,7 @@
 import itertools
 import os
 import re
+import tempfile
 import warnings
 from rasa_nlu import utils
 from rasa_nlu.extractors import EntityExtractor
@@ -27,30 +28,60 @@ class CompositeEntityExtractor(EntityExtractor):
         self.composite_entities = composite_entities or []
 
     @staticmethod
-    def _read_composite_entities():
-        """Read the defined composite patterns from the train file. We have
-        to manually load the file, as rasa strips our custom information.
+    def _get_train_file_cmd():
+        """Get the raw train data by fetching the train file given in the
+        command line arguments to the train script.
         """
         cmdline_args = create_argument_parser().parse_args()
         files = utils.list_files(cmdline_args.data)
         is_rasa_format = [_guess_format(file) == RASA_NLU for file in files]
         n_rasa_format = sum(is_rasa_format)
         # TODO: Support multiple training files
-        assert sum(is_rasa_format) <= 1, 'Composite entities currently ' \
-                'do not work with multiple training files.'
-        if n_rasa_format == 1:
-            file_index = [i for i, val in enumerate(is_rasa_format) if val][0]
-            file = files[file_index]
-            file_content = utils.read_json_file(file)
-            rasa_nlu_data = file_content['rasa_nlu_data']
+        assert sum(is_rasa_format) == 1, 'Composite entities currently ' \
+                'only work with exactly one train file.'
+        file_index = [i for i, val in enumerate(is_rasa_format) if val][0]
+        return files[file_index]
+
+    @staticmethod
+    def _get_train_file_http():
+        """Get the raw train data by fetching the most recent temp train file
+        that rasa has created.
+        """
+        # XXX: Getting the train file through the most recent temp file
+        # introduces a race condition: if during training process A a new
+        # training process B is started before process A reaches this component
+        # (CompositeEntityExtractor), then the train file of process B will be
+        # used in for composite entity extraction in process A.
+        temp_dir = tempfile.gettempdir()
+        train_files = [os.path.join(temp_dir, f)
+                       for f in os.listdir(temp_dir)
+                       if f.endswith('_training_data')]
+        assert len(train_files) > 0, 'There is no temporary train file.'
+        return list(sorted(train_files, key=os.path.getctime))[-1]
+
+    def _read_composite_entities(self):
+        """Read the defined composite patterns from the train file. We have
+        to manually load the file, as rasa strips our custom information.
+        """
+        try:
+            file = self._get_train_file_cmd()
+        except:
             try:
-                composite_entities = rasa_nlu_data['composite_entities']
-            except KeyError:
-                composite_entities = []
-            if not composite_entities:
-                warnings.warn('CompositeEntityExtractor was added to the '
-                        'pipeline but no composite entites have been defined.')
-            return composite_entities
+                file = self._get_train_file_http()
+            except:
+                warnings.warn('The CompositeEntityExtractor could not load '
+                        'the train file.')
+                return []
+        file_content = utils.read_json_file(file)
+        rasa_nlu_data = file_content['rasa_nlu_data']
+        try:
+            composite_entities = rasa_nlu_data['composite_entities']
+        except KeyError:
+            composite_entities = []
+        if not composite_entities:
+            warnings.warn('CompositeEntityExtractor was added to the '
+                    'pipeline but no composite entites have been defined.')
+        return composite_entities
 
     def train(self, training_data, cfg, **kwargs):
         self.composite_entities = self._read_composite_entities()
@@ -80,7 +111,8 @@ class CompositeEntityExtractor(EntityExtractor):
                           f'"{composite_entities_file}"')
         return cls(meta, composite_entities)
 
-    def _replace_entity_values(self, text, entities):
+    @staticmethod
+    def _replace_entity_values(text, entities):
         """Replace entity values with their respective entity name."""
         new_text = ''
         index_map = []
