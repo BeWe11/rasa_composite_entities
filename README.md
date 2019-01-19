@@ -113,8 +113,9 @@ By defining common patterns of entity combinations, we can automatically create 
 ```json
 "entities": [
   {
+    "confidence": 1.0,
     "entity": "product_with_attributes",
-    "type": "composite",
+    "extractor": "composite",
     "contained_entities": [
       {
         "start": 19,
@@ -122,8 +123,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "red",
         "entity": "color",
         "confidence": 0.9419322376955782,
-        "extractor": "ner_crf",
-        "type": "basic"
+        "extractor": "ner_crf"
       },
       {
         "start": 23,
@@ -131,8 +131,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "shirt",
         "entity": "product",
         "confidence": 0.9435936216683031,
-        "extractor": "ner_crf",
-        "type": "basic"
+        "extractor": "ner_crf"
       },
       {
         "start": 34,
@@ -140,14 +139,14 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "stripes",
         "entity": "pattern",
         "confidence": 0.9233923349716401,
-        "extractor": "ner_crf",
-        "type": "basic"
+        "extractor": "ner_crf"
       }
     ]
   },
   {
+    "confidence": 1.0,
     "entity": "product_with_attributes",
-    "type": "composite",
+    "extractor": "composite",
     "contained_entities": [
       {
         "start": 46,
@@ -155,8 +154,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "checkered",
         "entity": "pattern",
         "confidence": 0.8877627536275875,
-        "extractor": "ner_crf",
-        "type": "basic"
+        "extractor": "ner_crf"
       },
       {
         "start": 56,
@@ -164,8 +162,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "blue",
         "entity": "color",
         "confidence": 0.6778344517453893,
-        "extractor": "ner_crf",
-        "type": "basic"
+        "extractor": "ner_crf"
       },
       {
         "start": 61,
@@ -173,8 +170,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "shoes",
         "entity": "product",
         "confidence": 0.536797743231954,
-        "extractor": "ner_crf",
-        "type": "basic"
+        "extractor": "ner_crf"
       }
     ]
   }

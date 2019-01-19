@@ -145,8 +145,6 @@ class CompositeEntityExtractor(EntityExtractor):
         entities = message.get("entities", [])
         if not entities:
             return
-        for entity in entities:
-            entity['type'] = 'basic'
 
         text_with_entity_names, index_map = \
                 self._replace_entity_values(message.text, entities)
@@ -178,8 +176,9 @@ class CompositeEntityExtractor(EntityExtractor):
                         [entities[i] for i in contained_in_match],
                         key=lambda x: x['start']))
                 processed_composite_entities.append({
+                    'confidence': 1.0,
                     'entity': composite_entity['name'],
-                    'type': 'composite',
+                    'extractor': 'composite',
                     'contained_entities': contained_entities,
                 })
             used_entity_indices += list(itertools.chain.from_iterable(
