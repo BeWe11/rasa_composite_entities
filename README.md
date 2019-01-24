@@ -1,6 +1,6 @@
 # rasa_composite_entities
 
-A Rasa NLU component for composite entities, developed to be used in the Dialogue Engine of [Dialogue Technologies](https://www.dialogue-technologies.com).
+A Rasa NLU component for composite entities, developed to be used in the Dialogue Engine of [Dialogue Technologies](https://www.dialogue-technologies.com). 
 
 ## Installation
 
@@ -19,9 +19,7 @@ pipeline:
 - name: "nlp_spacy"
 - name: "tokenizer_spacy"
 - name: "intent_featurizer_spacy"
-- name: "intent_entity_featurizer_regex"
 - name: "ner_crf"
-- name: "ner_synonyms"
 - name: "intent_classifier_sklearn"
 - name: "rasa_composite_entities.CompositeEntityExtractor"
 ```
@@ -46,6 +44,19 @@ Simply add another entry to your training file (in JSON format) defining composi
 Every word starting with a "@" will be considered a placeholder for an entity with that name. The component is agnostic to the origin of entities, you can use anything that Rasa NLU returns as the "entity" field in its messages. This means that you can not only use the entities defined in your common examples, but also numerical entities from duckling etc.
 
 Longer patterns always take precedence over shorter patterns. If a shorter pattern matches entities that would also be matched by a longer pattern, the shorter pattern is ignored.
+
+Patterns are regex expressions! You can use patterns like
+```
+"composite_entities": [
+  {
+    "name": "product_with_attributes",
+    "patterns": [
+      "(?:@pattern\\s+)?(?:@color\\s+)?@product(?:\\s+with @[A-Z,a-z]+)?"
+    ]
+  }
+]
+```
+to match different variations of entity combinations. Be aware that you may need to properly escape your regexes to produce valid JSON files (in case of this example, you have to escape the backslashes with another backslash).
 
 ## Explanation
 
@@ -193,6 +204,18 @@ $ python -m rasa_nlu.server --path . --config config_with_composite.yml
 $ curl --request POST --header 'content-type: application/x-yml' --data-binary @train_http.yml --url 'localhost:5000/train?project=test_project'
 $ curl -XPOST localhost:5000/parse -d '{"q": "I am looking for a red shirt with stripes and checkered blue shoes", "project": "test_project"}'
 ```
+
+## Caveats
+
+Rasa NLU strips training files of any custom fields, including our "composite_entities" field. For our component to access this information, we have to circumenvent Rasa's train file loading process and get direct access to the raw data.
+
+When training through the Rasa's train script, the train file paths are fetched through the command line arguments.
+
+When training through the HTTP server, we exploit the fact that Rasa NLU creates temporary files containing the raw train data. Be aware that this creates a possible race condition when multiple training processes are executed simultaniously. If a new train process is started before the previous process has reached the CompositeEntityExtractor, there is a chance that the wrong train data will be picked up.
+
+## Similar projects
+
+There is a [pull request](https://github.com/RasaHQ/rasa_nlu/pull/1475) on Rasa NLU's Github page trying to implement composite entities. The request was closed without merging. The underlying code is available as a [rasa component](https://github.com/Revmaker/innatis). However, the repository is currently lacking documentation and the implementation seems to be more limited than ours.
 
 ## License
 
