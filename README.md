@@ -1,6 +1,6 @@
 # rasa_composite_entities
 
-A Rasa NLU component for composite entities, developed to be used in the Dialogue Engine of [Dialogue Technologies](https://www.dialogue-technologies.com). 
+A Rasa NLU component for composite entities, developed to be used in the Dialogue Engine of [Dialogue Technologies](https://www.dialogue-technologies.com).
 
 ## Installation
 
@@ -211,7 +211,7 @@ Rasa NLU strips training files of any custom fields, including our "composite_en
 
 When training through the Rasa's train script, the train file paths are fetched through the command line arguments.
 
-When training through the HTTP server, we exploit the fact that Rasa NLU creates temporary files containing the raw train data. Be aware that this creates a possible race condition when multiple training processes are executed simultaniously. If a new train process is started before the previous process has reached the CompositeEntityExtractor, there is a chance that the wrong train data will be picked up.
+When training through the HTTP server, we exploit the fact that Rasa NLU creates temporary files containing the raw train data. Be aware that this creates a possible race condition when multiple training processes are executed simultaneously. If a new train process is started before the previous process has reached the CompositeEntityExtractor, there is a chance that the wrong train data will be picked up.
 
 ## Similar projects
 
