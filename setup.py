@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="rasa_composite_entities",
-    version="0.2.1",
+    version="0.2.2",
     author="Benjamin Weigang",
     author_email="Benjamin.Weigang@mailbox.org",
     description="A Rasa NLU component for composite entities",
