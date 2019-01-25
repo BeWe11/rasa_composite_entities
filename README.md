@@ -213,10 +213,6 @@ When training through the Rasa's train script, the train file paths are fetched 
 
 When training through the HTTP server, we exploit the fact that Rasa NLU creates temporary files containing the raw train data. Be aware that this creates a possible race condition when multiple training processes are executed simultaneously. If a new train process is started before the previous process has reached the CompositeEntityExtractor, there is a chance that the wrong train data will be picked up.
 
-## Similar projects
-
-There is a [pull request](https://github.com/RasaHQ/rasa_nlu/pull/1475) on Rasa NLU's Github page trying to implement composite entities. The request was closed without merging. The underlying code is available as a [rasa component](https://github.com/Revmaker/innatis). However, the repository is currently lacking documentation and the implementation seems to be more limited than ours.
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE.md file for details.
