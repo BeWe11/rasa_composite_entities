@@ -24,7 +24,7 @@ class CompositeEntityExtractor(EntityExtractor):
     provides = ['composite_entities']
 
     def __init__(self, component_config=None, composite_entities=None):
-        super(CompositeEntityExtractor,self).__init__(component_config)
+        super(CompositeEntityExtractor, self).__init__(component_config)
         self.composite_entities = composite_entities or []
 
     @staticmethod
@@ -107,7 +107,8 @@ class CompositeEntityExtractor(EntityExtractor):
             composite_entities = utils.read_json_file(composite_entities_file)
         else:
             composite_entities = []
-            warnings.warn('Failed to load composite entities file from "{}"'.format(composite_entities_file))
+            warnings.warn('Failed to load composite entities'
+                          'file from "{}"'.format(composite_entities_file))
         return cls(meta, composite_entities)
 
     @staticmethod
