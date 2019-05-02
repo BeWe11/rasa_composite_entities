@@ -89,18 +89,17 @@ class CompositeEntityExtractor(EntityExtractor):
     def process(self, message, **kwargs):
         self._find_composite_entities(message)
 
-    def persist(self, model_dir):
+    def persist(self, file_name, dir_name):
         if self.composite_entities:
             composite_entities_file = os.path.join(
-                    model_dir, COMPOSITE_ENTITIES_FILE_NAME)
+                    dir_name, COMPOSITE_ENTITIES_FILE_NAME)
             write_json_to_file(composite_entities_file, self.composite_entities,
                                separators=(',', ': '))
 
     @classmethod
-    def load(cls, model_dir=None, model_metadata=None, cached_component=None,
-             **kwargs):
-        meta = model_metadata.for_component(cls.name)
-        file_name = meta.get('composite_entities_file',
+    def load(cls, component_meta=None, model_dir=None, model_metadata=None,
+             cached_component=None, **kwargs):
+        file_name = component_meta.get('composite_entities_file',
                              COMPOSITE_ENTITIES_FILE_NAME)
         composite_entities_file = os.path.join(model_dir, file_name)
         if os.path.isfile(composite_entities_file):
@@ -109,7 +108,7 @@ class CompositeEntityExtractor(EntityExtractor):
             composite_entities = []
             warnings.warn('Failed to load composite entities'
                           'file from "{}"'.format(composite_entities_file))
-        return cls(meta, composite_entities)
+        return cls(component_meta, composite_entities)
 
     @staticmethod
     def _replace_entity_values(text, entities):
