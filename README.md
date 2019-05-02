@@ -16,11 +16,11 @@ After installation, the component can be added your pipeline like any other comp
 language: "en_core_web_md"
 
 pipeline:
-- name: "nlp_spacy"
-- name: "tokenizer_spacy"
-- name: "intent_featurizer_spacy"
-- name: "ner_crf"
-- name: "intent_classifier_sklearn"
+- name: "SpacyNLP"
+- name: "SpacyTokenizer"
+- name: "SpacyFeaturizer"
+- name: "CRFEntityExtractor"
+- name: "SklearnIntentClassifier"
 - name: "rasa_composite_entities.CompositeEntityExtractor"
 ```
 
@@ -73,7 +73,7 @@ Properly trained, Rasa NLU could return entities like this:
     "value": "red",
     "entity": "color",
     "confidence": 0.9419322376955782,
-    "extractor": "ner_crf"
+    "extractor": "CRFEntityExtractor"
   },
   {
     "start": 23,
@@ -81,7 +81,7 @@ Properly trained, Rasa NLU could return entities like this:
     "value": "shirt",
     "entity": "product",
     "confidence": 0.9435936216683031,
-    "extractor": "ner_crf"
+    "extractor": "CRFEntityExtractor"
   },
   {
     "start": 34,
@@ -89,7 +89,7 @@ Properly trained, Rasa NLU could return entities like this:
     "value": "stripes",
     "entity": "pattern",
     "confidence": 0.9233923349716401,
-    "extractor": "ner_crf"
+    "extractor": "CRFEntityExtractor"
   },
   {
     "start": 46,
@@ -97,7 +97,7 @@ Properly trained, Rasa NLU could return entities like this:
     "value": "checkered",
     "entity": "pattern",
     "confidence": 0.8877627536275875,
-    "extractor": "ner_crf"
+    "extractor": "CRFEntityExtractor"
   },
   {
     "start": 56,
@@ -105,7 +105,7 @@ Properly trained, Rasa NLU could return entities like this:
     "value": "blue",
     "entity": "color",
     "confidence": 0.6778344517453893,
-    "extractor": "ner_crf"
+    "extractor": "CRFEntityExtractor"
   },
   {
     "start": 61,
@@ -113,7 +113,7 @@ Properly trained, Rasa NLU could return entities like this:
     "value": "shoes",
     "entity": "product",
     "confidence": 0.536797743231954,
-    "extractor": "ner_crf"
+    "extractor": "CRFEntityExtractor"
   }
 ]
 ```
@@ -134,7 +134,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "red",
         "entity": "color",
         "confidence": 0.9419322376955782,
-        "extractor": "ner_crf"
+        "extractor": "CRFEntityExtractor"
       },
       {
         "start": 23,
@@ -142,7 +142,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "shirt",
         "entity": "product",
         "confidence": 0.9435936216683031,
-        "extractor": "ner_crf"
+        "extractor": "CRFEntityExtractor"
       },
       {
         "start": 34,
@@ -150,7 +150,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "stripes",
         "entity": "pattern",
         "confidence": 0.9233923349716401,
-        "extractor": "ner_crf"
+        "extractor": "CRFEntityExtractor"
       }
     ]
   },
@@ -165,7 +165,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "checkered",
         "entity": "pattern",
         "confidence": 0.8877627536275875,
-        "extractor": "ner_crf"
+        "extractor": "CRFEntityExtractor"
       },
       {
         "start": 56,
@@ -173,7 +173,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "blue",
         "entity": "color",
         "confidence": 0.6778344517453893,
-        "extractor": "ner_crf"
+        "extractor": "CRFEntityExtractor"
       },
       {
         "start": 61,
@@ -181,7 +181,7 @@ By defining common patterns of entity combinations, we can automatically create 
         "value": "shoes",
         "entity": "product",
         "confidence": 0.536797743231954,
-        "extractor": "ner_crf"
+        "extractor": "CRFEntityExtractor"
       }
     ]
   }
