@@ -2,6 +2,8 @@
 
 A Rasa NLU component for composite entities, developed to be used in the Dialogue Engine of [Dialogue Technologies](https://www.dialogue-technologies.com).
 
+See also [my blog post](https://www.benjaminweigang.com/rasa-nlu-composite-entities/).
+
 **Works with rasa 1.x!**
 
 ## Installation
