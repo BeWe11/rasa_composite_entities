@@ -3,11 +3,11 @@ import os
 import re
 import tempfile
 import warnings
-from rasa_nlu import utils
-from rasa_nlu.extractors import EntityExtractor
-from rasa_nlu.train import create_argument_parser
-from rasa_nlu.training_data.loading import _guess_format
-from rasa_nlu.utils import write_json_to_file
+from rasa.nlu import utils
+from rasa.nlu.extractors import EntityExtractor
+from rasa.__main__ import create_argument_parser
+from rasa.nlu.training_data.loading import _guess_format
+from rasa.nlu.utils import write_json_to_file
 
 
 COMPOSITE_ENTITIES_FILE_NAME = 'composite_entities.json'
@@ -33,7 +33,7 @@ class CompositeEntityExtractor(EntityExtractor):
         command line arguments to the train script.
         """
         cmdline_args = create_argument_parser().parse_args()
-        files = utils.list_files(cmdline_args.data)
+        files = utils.list_files(cmdline_args.nlu)
         return [file for file in files if _guess_format(file) == RASA_NLU]
 
     @staticmethod
