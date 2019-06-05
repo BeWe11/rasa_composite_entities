@@ -49,7 +49,7 @@ Every word starting with a "@" will be considered a placeholder for an entity wi
 
 Longer patterns always take precedence over shorter patterns. If a shorter pattern matches entities that would also be matched by a longer pattern, the shorter pattern is ignored.
 
-Patterns are regex expressions! You can use patterns like
+Patterns are regular expressions! You can use patterns like
 ```
 "composite_entities": [
   {
