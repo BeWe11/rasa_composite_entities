@@ -34,6 +34,8 @@ class CompositeEntityExtractor(EntityExtractor):
         command line arguments to the train script.
         """
         cmdline_args = create_argument_parser().parse_args()
+        if not cmdline_args.__contains__("nlu"):
+            cmdline_args.nlu = 'data/nlu.json'
         files = utils.list_files(cmdline_args.nlu)
         return [file for file in files if _guess_format(file) == RASA_NLU]
 
