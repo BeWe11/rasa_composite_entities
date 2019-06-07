@@ -31,10 +31,15 @@ class CompositeEntityExtractor(EntityExtractor):
     @staticmethod
     def _get_train_files_cmd():
         """Get the raw train data by fetching the train file given in the
-        command line arguments to the train script.
+        command line arguments to the train script. When training the NLU model
+        explicitly, the training data will be in the "nlu" argument, otherwise
+        it will be in the "data" argument.
         """
         cmdline_args = create_argument_parser().parse_args()
-        files = utils.list_files(cmdline_args.nlu)
+        try:
+            files = list_files(cmdline_args.nlu)
+        except AttributeError:
+            files = list(get_core_nlu_files(cmdline_args.data)[1])
         return [file for file in files if _guess_format(file) == RASA_NLU]
 
     @staticmethod
