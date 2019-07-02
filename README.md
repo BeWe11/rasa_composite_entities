@@ -5,7 +5,7 @@ Dialogue Engine of [Dialogue Technologies](https://www.dialogue-technologies.com
 
 See also [my blog post](https://www.benjaminweigang.com/rasa-nlu-composite-entities/).
 
-**Works with rasa 1.x! For rasa X see below.**
+**Works with rasa 1.x!**
 
 ## Installation
 
@@ -231,13 +231,6 @@ $ curl --request POST --header 'content-type: application/x-yml' --data-binary @
 $ curl -XPOST localhost:5005/model/parse -d '{"text": "I am looking for a red shirt with stripes and checkered blue shoes", "project": "test_project"}'
 ```
 
-## Rasa X
-
-It's currently not possible to train this component via rasa X. Rasa X only
-reads training files in markdown format. When importing JSON files into the
-rasa X UI, the composite patterns are stripped before the markdown file is
-saved.
-
 ## Caveats
 
 Rasa NLU strips training files of any custom fields, including our
@@ -256,7 +249,6 @@ creates a possible race condition when multiple training processes are executed
 simultaneously. If a new train process is started before the previous process
 has reached the CompositeEntityExtractor, there is a chance that the wrong
 train data will be picked up.
-
 
 ## License
 
