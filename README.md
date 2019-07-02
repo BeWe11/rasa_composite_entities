@@ -214,8 +214,8 @@ above, the output will be changed to this:
 See the `example` folder for a minimal example that can be trained and tested.
 To get the output from above, run:
 ```bash
-$ python -m rasa train nlu --out . --nlu train.json --config config_with_composite.yml
-$ python -m rasa run --enable-api --model .
+$ rasa train nlu --out . --nlu train.json --config config_with_composite.yml
+$ rasa run --enable-api --model .
 $ curl -XPOST localhost:5005/model/parse -d '{"text": "I am looking for a red shirt with stripes and checkered blue shoes"}'
 ```
 If you want to compare this output to the normal Rasa NLU output, use the
@@ -226,7 +226,7 @@ The component also works when training using the server API:
 **HTTP training is currently broken because of API changes in rasa 1.x.
 Hopefully, this will soon be fixed!**
 ```bash
-$ python -m rasa run --enable-api --model .
+$ rasa run --enable-api --model .
 $ curl --request POST --header 'content-type: application/x-yml' --data-binary @train_http.yml --url 'localhost:5000/train?project=test_project'
 $ curl -XPOST localhost:5005/model/parse -d '{"text": "I am looking for a red shirt with stripes and checkered blue shoes", "project": "test_project"}'
 ```
