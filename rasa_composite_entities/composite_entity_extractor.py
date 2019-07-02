@@ -20,7 +20,7 @@ class CompositeEntityExtractor(EntityExtractor):
     can be defined in the normal rasa JSON train data file.
     """
 
-    name = "composite_entity_extractor"
+    name = "CompositeEntityExtractor"
     requires = ["entities"]
     provides = ["composite_entities"]
 
