@@ -51,7 +51,7 @@
         "entities": []
       },
       {
-        "text": "i am looking for a red shirt with stripes and checkered blue shoes.",
+        "text": "i am looking for a red shirt with stripes and checkered blue shoes",
         "intent": "product_search",
         "entities" : [
           {
@@ -93,7 +93,7 @@
         ]
       },
       {
-        "text": "i am looking for a red shirt with stripes and checkered blue shoes.",
+        "text": "i am looking for a red shirt with stripes and checkered blue shoes",
         "intent": "product_search",
         "entities" : [
           {
