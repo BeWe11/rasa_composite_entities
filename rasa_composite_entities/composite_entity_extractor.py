@@ -13,7 +13,7 @@ from rasa.utils.io import list_files, read_json_file
 
 COMPOSITE_ENTITIES_FILE_NAME = "composite_entities.json"
 ENTITY_PREFIX = "@"
-RASA_NLU = "rasa_nlu"
+RASA_NLU = "rasa"
 
 
 class CompositeEntityExtractor(EntityExtractor):
@@ -37,6 +37,8 @@ class CompositeEntityExtractor(EntityExtractor):
         it will be in the "data" argument.
         """
         cmdline_args = create_argument_parser().parse_args()
+        if not cmdline_args.__contains__("nlu"):
+            cmdline_args.nlu = 'data/generated/training.json'
         try:
             files = list_files(cmdline_args.nlu)
         except AttributeError:
