@@ -38,28 +38,19 @@ class CompositeEntityExtractor(EntityExtractor):
         super(CompositeEntityExtractor, self).__init__(component_config)
         self.composite_entities = composite_entities or []
 
+    @staticmethod
     def _get_train_files_cmd(self):
         """Get the raw train data by fetching the train file given in the
         command line arguments to the train script. When training the NLU model
         explicitly, the training data will be in the "nlu" argument, otherwise
         it will be in the "data" argument.
         """
-        try:
-            print("COMPONENT CONFIG: ", self.component_config.get("training_file"))
-        except:
-            print("could not print")
         cmdline_args = create_argument_parser().parse_args()
-        cmdline_args.nlu = self.component_config.get("training_file")
         try:
             files = list_files(cmdline_args.nlu)
         except AttributeError:
             files = list(get_core_nlu_files(cmdline_args.data)[1])
-        print("_get_train_files_cmd files:", files)
-        for file in files:
-            print(guess_format(file))
-            print(_guess_format(file))
         result = [file for file in files if _guess_format(file) == RASA_NLU]
-        print("_get_train_files_cmd RESULT: ", result)
         return result
 
     @staticmethod
@@ -86,16 +77,20 @@ class CompositeEntityExtractor(EntityExtractor):
         to manually load the file, as rasa strips our custom information.
         """
         try:
-            files = self._get_train_files_cmd()
+            files = [self.component_config["training_data"]]
         except:
             try:
-                files = self._get_train_files_http()
+                files = self._get_train_files_cmd()
             except:
-                warnings.warn(
-                    "The CompositeEntityExtractor could not load " "the train file."
-                )
-                return []
+                try:
+                    files = self._get_train_files_http()
+                except:
+                    warnings.warn(
+                        "The CompositeEntityExtractor could not load the train file."
+                    )
+                    return []
         composite_entities = []
+        print("FILES: ", files)
         for file in files:
             file_content = read_json_file(file)
             rasa_nlu_data = file_content["rasa_nlu_data"]
