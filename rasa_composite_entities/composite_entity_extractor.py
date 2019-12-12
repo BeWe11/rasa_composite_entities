@@ -39,7 +39,7 @@ class CompositeEntityExtractor(EntityExtractor):
         self.composite_entities = composite_entities or []
 
     @staticmethod
-    def _get_train_files_cmd(self):
+    def _get_train_files_cmd():
         """Get the raw train data by fetching the train file given in the
         command line arguments to the train script. When training the NLU model
         explicitly, the training data will be in the "nlu" argument, otherwise
@@ -77,10 +77,12 @@ class CompositeEntityExtractor(EntityExtractor):
         to manually load the file, as rasa strips our custom information.
         """
         try:
-            files = [self.component_config["training_data"]]
+            files = [self.component_config[COMPOSITE_PATTERNS_KEY]]
+            warnings.warn("No composite entity patterns path set in config.yml")
         except:
             try:
                 files = self._get_train_files_cmd()
+                warnings.warn("No train file specified in cli command.")
             except:
                 try:
                     files = self._get_train_files_http()
@@ -88,22 +90,29 @@ class CompositeEntityExtractor(EntityExtractor):
                     warnings.warn(
                         "The CompositeEntityExtractor could not load the train file."
                     )
-                    return []
+                    return [] 
         composite_entities = []
-        print("FILES: ", files)
         for file in files:
             file_content = read_json_file(file)
-            rasa_nlu_data = file_content["rasa_nlu_data"]
-            try:
-                composite_entities_in_file = rasa_nlu_data["composite_entities"]
-            except KeyError:
-                pass
-            else:
-                composite_entities.extend(composite_entities_in_file)
+            if "rasa_nlu_data" in file_content:
+                try:
+                    rasa_nlu_data = file_content.get("rasa_nlu_data")
+                    composite_entities_in_file = rasa_nlu_data["composite_entities"]
+                except KeyError:
+                    pass
+                else:
+                    composite_entities.extend(composite_entities_in_file)
+            elif "composite_entities" in file_content:
+                try:
+                    composite_entities_in_file = file_content.get("composite_entities")
+                except KeyError:
+                    pass
+                else:
+                    composite_entities.extend(composite_entities_in_file)
         if not composite_entities:
             warnings.warn(
                 "CompositeEntityExtractor was added to the "
-                "pipeline but no composite entites have been defined."
+                "pipeline but no composite entities have been defined."
             )
         return composite_entities
 
