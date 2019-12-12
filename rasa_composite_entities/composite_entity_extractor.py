@@ -21,6 +21,7 @@ from rasa.nlu.utils import write_json_to_file
 from rasa.utils.io import list_files, read_json_file
 
 COMPOSITE_ENTITIES_FILE_NAME = "composite_entities.json"
+COMPOSITE_PATTERNS_KEY = "composite_entity_patterns"
 ENTITY_PREFIX = "@"
 RASA_NLU = "rasa_nlu"
 
@@ -78,12 +79,12 @@ class CompositeEntityExtractor(EntityExtractor):
         """
         try:
             files = [self.component_config[COMPOSITE_PATTERNS_KEY]]
-            warnings.warn("No composite entity patterns path set in config.yml")
         except:
+            warnings.warn("No composite entity patterns path set in config.yml")
             try:
                 files = self._get_train_files_cmd()
-                warnings.warn("No train file specified in cli command.")
             except:
+                warnings.warn("No train file specified in cli command.")
                 try:
                     files = self._get_train_files_http()
                 except:
