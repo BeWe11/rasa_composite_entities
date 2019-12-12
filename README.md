@@ -31,6 +31,44 @@ pipeline:
 - name: "rasa_composite_entities.CompositeEntityExtractor"
 ```
 
+An optional configuration variable `composite_entity_patterns` can be used to specify the filename where the composite entity patterns are defined:
+
+```yaml
+language: "en_core_web_md"
+
+pipeline:
+- name: "SpacyNLP"
+- name: "SpacyTokenizer"
+- name: "SpacyFeaturizer"
+- name: "CRFEntityExtractor"
+- name: "SklearnIntentClassifier"
+- name: "rasa_composite_entities.CompositeEntityExtractor"
+  composite_entity_patterns: "path/to/composite_entity_patterns.json"
+```
+
+`composite_entity_patterns` can be defined as the path to the parent training file:
+
+```json
+{
+    "rasa_nlu_data": {
+        "composite_entities": [],
+        "common_examples": [],
+        "regex_features" : [],
+        "lookup_tables"  : [],
+        "entity_synonyms": []
+    }
+}
+```
+
+or in as the path to a stand-alone json file:
+
+```json
+{
+    "composite_entities": []
+}
+```
+
+
 ## Usage
 
 Simply add another entry to your training file (in JSON format) defining
