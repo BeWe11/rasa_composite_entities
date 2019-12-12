@@ -7,13 +7,22 @@ import warnings
 from rasa.__main__ import create_argument_parser
 from rasa.data import get_core_nlu_files
 from rasa.nlu.extractors import EntityExtractor
-from rasa.nlu.training_data.loading import _guess_format
+import itertools
+import os
+import re
+import tempfile
+import warnings
+
+from rasa.__main__ import create_argument_parser
+from rasa.data import get_core_nlu_files
+from rasa.nlu.extractors import EntityExtractor
+from rasa.nlu.training_data.loading import _guess_format, guess_format
 from rasa.nlu.utils import write_json_to_file
 from rasa.utils.io import list_files, read_json_file
 
 COMPOSITE_ENTITIES_FILE_NAME = "composite_entities.json"
 ENTITY_PREFIX = "@"
-RASA_NLU = "rasa"
+RASA_NLU = "rasa_nlu"
 
 
 class CompositeEntityExtractor(EntityExtractor):
@@ -29,21 +38,29 @@ class CompositeEntityExtractor(EntityExtractor):
         super(CompositeEntityExtractor, self).__init__(component_config)
         self.composite_entities = composite_entities or []
 
-    @staticmethod
-    def _get_train_files_cmd():
+    def _get_train_files_cmd(self):
         """Get the raw train data by fetching the train file given in the
         command line arguments to the train script. When training the NLU model
         explicitly, the training data will be in the "nlu" argument, otherwise
         it will be in the "data" argument.
         """
+        try:
+            print("COMPONENT CONFIG: ", self.component_config.get("training_file"))
+        except:
+            print("could not print")
         cmdline_args = create_argument_parser().parse_args()
-        if not cmdline_args.__contains__("nlu"):
-            cmdline_args.nlu = 'data/generated/training.json'
+        cmdline_args.nlu = self.component_config.get("training_file")
         try:
             files = list_files(cmdline_args.nlu)
         except AttributeError:
             files = list(get_core_nlu_files(cmdline_args.data)[1])
-        return [file for file in files if _guess_format(file) == RASA_NLU]
+        print("_get_train_files_cmd files:", files)
+        for file in files:
+            print(guess_format(file))
+            print(_guess_format(file))
+        result = [file for file in files if _guess_format(file) == RASA_NLU]
+        print("_get_train_files_cmd RESULT: ", result)
+        return result
 
     @staticmethod
     def _get_train_files_http():
@@ -75,8 +92,7 @@ class CompositeEntityExtractor(EntityExtractor):
                 files = self._get_train_files_http()
             except:
                 warnings.warn(
-                    "The CompositeEntityExtractor could not load "
-                    "the train file."
+                    "The CompositeEntityExtractor could not load " "the train file."
                 )
                 return []
         composite_entities = []
@@ -84,9 +100,7 @@ class CompositeEntityExtractor(EntityExtractor):
             file_content = read_json_file(file)
             rasa_nlu_data = file_content["rasa_nlu_data"]
             try:
-                composite_entities_in_file = rasa_nlu_data[
-                    "composite_entities"
-                ]
+                composite_entities_in_file = rasa_nlu_data["composite_entities"]
             except KeyError:
                 pass
             else:
@@ -110,9 +124,7 @@ class CompositeEntityExtractor(EntityExtractor):
                 dir_name, COMPOSITE_ENTITIES_FILE_NAME
             )
             write_json_to_file(
-                composite_entities_file,
-                self.composite_entities,
-                separators=(",", ": "),
+                composite_entities_file, self.composite_entities, separators=(",", ": ")
             )
 
     @classmethod
@@ -183,9 +195,7 @@ class CompositeEntityExtractor(EntityExtractor):
             contained_entity_indices = []
             # Sort patterns (longest pattern first) as longer patterns might
             # contain more information
-            for pattern in sorted(
-                composite_entity["patterns"], key=len, reverse=True
-            ):
+            for pattern in sorted(composite_entity["patterns"], key=len, reverse=True):
                 for match in re.finditer(pattern, text_with_entity_names):
                     contained_in_match = [
                         index
@@ -223,12 +233,8 @@ class CompositeEntityExtractor(EntityExtractor):
             )
 
         entities = [
-            entity
-            for i, entity in enumerate(entities)
-            if i not in used_entity_indices
+            entity for i, entity in enumerate(entities) if i not in used_entity_indices
         ]
         message.set(
-            "entities",
-            entities + processed_composite_entities,
-            add_to_output=True,
+            "entities", entities + processed_composite_entities, add_to_output=True
         )
