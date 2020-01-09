@@ -51,8 +51,12 @@ class CompositeEntityExtractor(EntityExtractor):
             files = list_files(cmdline_args.nlu)
         except AttributeError:
             files = list(get_core_nlu_files(cmdline_args.data)[1])
+<<<<<<< HEAD
         result = [file for file in files if guess_format(file) == RASA_NLU]
         return result
+=======
+        return [file for file in files if _guess_format(file) == RASA_NLU]
+>>>>>>> 7187a735f38df342d7c57bbfd8401d7ef7fcec84
 
     @staticmethod
     def _get_train_files_http():
