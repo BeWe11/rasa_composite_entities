@@ -89,10 +89,12 @@ pipeline:
 - name: "CRFEntityExtractor"
 - name: "SklearnIntentClassifier"
 - name: "rasa_composite_entities.CompositeEntityExtractor"
-  composite_entity_path: "path/to/composite_entity_patterns.json"
+  composite_patterns_path: "path/to/composite_entity_patterns.json"
 ```
 
-`composite_entity_patterns` can be defined as the path to the parent training file:
+`composite_patterns_path` can be defined as the path to the parent training file:
+
+`nlu.json`
 
 ```json
 {
@@ -107,6 +109,8 @@ pipeline:
 ```
 
 or in as the path to a stand-alone json file:
+
+`composite_entities.json`
 
 ```json
 {
