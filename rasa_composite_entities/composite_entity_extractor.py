@@ -88,7 +88,8 @@ class CompositeEntityExtractor(EntityExtractor):
                     files = self._get_train_files_http()
                 except:
                     warnings.warn(
-                        "The CompositeEntityExtractor could not load the train file."
+                        "The CompositeEntityExtractor could not load "
+                        "the train file."
                     )
                     return [] 
         composite_entities = []
@@ -132,8 +133,8 @@ class CompositeEntityExtractor(EntityExtractor):
                 dir_name, COMPOSITE_ENTITIES_FILE_NAME
             )
             write_json_to_file(
-                composite_entities_file, 
-                self.composite_entities, 
+                composite_entities_file,
+                self.composite_entities,
                 separators=(",", ": ")
             )
 
@@ -245,12 +246,12 @@ class CompositeEntityExtractor(EntityExtractor):
             )
 
         entities = [
-            entity 
-            for i, entity in enumerate(entities) 
+            entity
+            for i, entity in enumerate(entities)
             if i not in used_entity_indices
         ]
         message.set(
-            "entities", 
-            entities + processed_composite_entities, 
+            "entities",
+            entities + processed_composite_entities,
             add_to_output=True
         )
