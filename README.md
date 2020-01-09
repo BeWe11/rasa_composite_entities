@@ -31,9 +31,6 @@ pipeline:
 - name: "rasa_composite_entities.CompositeEntityExtractor"
 ```
 
-
-
-
 ## Usage
 
 Simply add another entry to your training file (in JSON format) defining
