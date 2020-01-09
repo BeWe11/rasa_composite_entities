@@ -135,7 +135,7 @@ class CompositeEntityExtractor(EntityExtractor):
             write_json_to_file(
                 composite_entities_file,
                 self.composite_entities,
-                separators=(",", ": ")
+                separators=(",", ": "),
             )
 
     @classmethod
@@ -253,5 +253,5 @@ class CompositeEntityExtractor(EntityExtractor):
         message.set(
             "entities",
             entities + processed_composite_entities,
-            add_to_output=True
+            add_to_output=True,
         )
