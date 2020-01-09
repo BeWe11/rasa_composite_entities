@@ -31,42 +31,7 @@ pipeline:
 - name: "rasa_composite_entities.CompositeEntityExtractor"
 ```
 
-An optional configuration variable `composite_entity_patterns` can be used to specify the filename where the composite entity patterns are defined:
 
-```yaml
-language: "en_core_web_md"
-
-pipeline:
-- name: "SpacyNLP"
-- name: "SpacyTokenizer"
-- name: "SpacyFeaturizer"
-- name: "CRFEntityExtractor"
-- name: "SklearnIntentClassifier"
-- name: "rasa_composite_entities.CompositeEntityExtractor"
-  composite_entity_patterns: "path/to/composite_entity_patterns.json"
-```
-
-`composite_entity_patterns` can be defined as the path to the parent training file:
-
-```json
-{
-    "rasa_nlu_data": {
-        "composite_entities": [],
-        "common_examples": [],
-        "regex_features" : [],
-        "lookup_tables"  : [],
-        "entity_synonyms": []
-    }
-}
-```
-
-or in as the path to a stand-alone json file:
-
-```json
-{
-    "composite_entities": []
-}
-```
 
 
 ## Usage
@@ -111,6 +76,45 @@ Patterns are regular expressions! You can use patterns like
 to match different variations of entity combinations. Be aware that you may
 need to properly escape your regexes to produce valid JSON files (in case of
 this example, you have to escape the backslashes with another backslash).
+
+An optional configuration variable `composite_patterns_path` can be used to specify the filename where the composite entity patterns are defined:
+
+```yaml
+language: "en_core_web_md"
+
+pipeline:
+- name: "SpacyNLP"
+- name: "SpacyTokenizer"
+- name: "SpacyFeaturizer"
+- name: "CRFEntityExtractor"
+- name: "SklearnIntentClassifier"
+- name: "rasa_composite_entities.CompositeEntityExtractor"
+  composite_entity_path: "path/to/composite_entity_patterns.json"
+```
+
+`composite_entity_patterns` can be defined as the path to the parent training file:
+
+```json
+{
+    "rasa_nlu_data": {
+        "composite_entities": [],
+        "common_examples": [],
+        "regex_features" : [],
+        "lookup_tables"  : [],
+        "entity_synonyms": []
+    }
+}
+```
+
+or in as the path to a stand-alone json file:
+
+```json
+{
+    "composite_entities": []
+}
+```
+
+__Note:__ Either option works, but giving a path to the external file is preferred. 
 
 ## Explanation
 
