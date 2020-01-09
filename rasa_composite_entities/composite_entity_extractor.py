@@ -16,12 +16,12 @@ import warnings
 from rasa.__main__ import create_argument_parser
 from rasa.data import get_core_nlu_files
 from rasa.nlu.extractors import EntityExtractor
-from rasa.nlu.training_data.loading import _guess_format, guess_format
+from rasa.nlu.training_data.loading import guess_format
 from rasa.nlu.utils import write_json_to_file
 from rasa.utils.io import list_files, read_json_file
 
 COMPOSITE_ENTITIES_FILE_NAME = "composite_entities.json"
-COMPOSITE_PATTERNS_KEY = "composite_entity_patterns"
+COMPOSITE_PATTERNS_PATH = "composite_patterns_path"
 ENTITY_PREFIX = "@"
 RASA_NLU = "rasa_nlu"
 
@@ -51,7 +51,7 @@ class CompositeEntityExtractor(EntityExtractor):
             files = list_files(cmdline_args.nlu)
         except AttributeError:
             files = list(get_core_nlu_files(cmdline_args.data)[1])
-        result = [file for file in files if _guess_format(file) == RASA_NLU]
+        result = [file for file in files if guess_format(file) == RASA_NLU]
         return result
 
     @staticmethod
@@ -78,7 +78,7 @@ class CompositeEntityExtractor(EntityExtractor):
         to manually load the file, as rasa strips our custom information.
         """
         try:
-            files = [self.component_config[COMPOSITE_PATTERNS_KEY]]
+            files = [self.component_config[COMPOSITE_PATTERNS_PATH]]
         except:
             warnings.warn("No composite entity patterns path set in config.yml")
             try:
@@ -98,14 +98,18 @@ class CompositeEntityExtractor(EntityExtractor):
             if "rasa_nlu_data" in file_content:
                 try:
                     rasa_nlu_data = file_content.get("rasa_nlu_data")
-                    composite_entities_in_file = rasa_nlu_data["composite_entities"]
+                    composite_entities_in_file = rasa_nlu_data[
+                        "composite_entities"
+                    ]
                 except KeyError:
                     pass
                 else:
                     composite_entities.extend(composite_entities_in_file)
             elif "composite_entities" in file_content:
                 try:
-                    composite_entities_in_file = file_content.get("composite_entities")
+                    composite_entities_in_file = file_content.get(
+                        "composite_entities"
+                    )
                 except KeyError:
                     pass
                 else:
@@ -129,7 +133,9 @@ class CompositeEntityExtractor(EntityExtractor):
                 dir_name, COMPOSITE_ENTITIES_FILE_NAME
             )
             write_json_to_file(
-                composite_entities_file, self.composite_entities, separators=(",", ": ")
+                composite_entities_file, 
+                self.composite_entities, 
+                separators=(",", ": ")
             )
 
     @classmethod
@@ -200,7 +206,9 @@ class CompositeEntityExtractor(EntityExtractor):
             contained_entity_indices = []
             # Sort patterns (longest pattern first) as longer patterns might
             # contain more information
-            for pattern in sorted(composite_entity["patterns"], key=len, reverse=True):
+            for pattern in sorted(
+                composite_entity["patterns"], key=len, reverse=True
+            ):
                 for match in re.finditer(pattern, text_with_entity_names):
                     contained_in_match = [
                         index
@@ -238,8 +246,12 @@ class CompositeEntityExtractor(EntityExtractor):
             )
 
         entities = [
-            entity for i, entity in enumerate(entities) if i not in used_entity_indices
+            entity 
+            for i, entity in enumerate(entities) 
+            if i not in used_entity_indices
         ]
         message.set(
-            "entities", entities + processed_composite_entities, add_to_output=True
+            "entities", 
+            entities + processed_composite_entities, 
+            add_to_output=True
         )
