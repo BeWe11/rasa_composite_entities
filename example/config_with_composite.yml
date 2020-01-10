@@ -7,3 +7,4 @@ pipeline:
 - name: "CRFEntityExtractor"
 - name: "SklearnIntentClassifier"
 - name: "rasa_composite_entities.CompositeEntityExtractor"
+  composite_patterns_path: "composite_entity_patterns.json"

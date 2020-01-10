@@ -1,0 +1,11 @@
+{
+  "composite_entities": [
+    {
+      "name": "product_with_attributes",
+      "patterns": [
+        "@color @product with @pattern",
+        "@pattern @color @product"
+      ]
+    }
+  ]
+}

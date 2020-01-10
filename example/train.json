@@ -1,14 +1,5 @@
 {
   "rasa_nlu_data": {
-    "composite_entities": [
-      {
-        "name": "product_with_attributes",
-        "patterns": [
-            "@color @product with @pattern",
-            "@pattern @color @product"
-        ]
-      }
-    ],
     "common_examples": [
       {
         "text": "hey",
