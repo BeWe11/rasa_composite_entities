@@ -33,8 +33,38 @@ pipeline:
 
 ## Usage
 
-Simply add another entry to your training file (in JSON format) defining
-composite patterns:
+There are two ways to add composite entity definitions to your training data.
+The first (and prefered!) way is to create a JSON file containing the following
+example structure:
+```json
+{
+ "composite_entities": [
+   {
+     "name": "product_with_attributes",
+     "patterns": [
+       "@color @product with @pattern",
+       "@pattern @color @product"
+     ]
+   }
+ ]
+}
+```
+You can then specify the path to this variable in you pipeline like this:
+```yaml
+language: "en_core_web_md"
+
+pipeline:
+- name: "SpacyNLP"
+- name: "SpacyTokenizer"
+- name: "SpacyFeaturizer"
+- name: "CRFEntityExtractor"
+- name: "SklearnIntentClassifier"
+- name: "rasa_composite_entities.CompositeEntityExtractor"
+  composite_patterns_path: "path/to/composite_entity_patterns.json"
+```
+
+Alternatively, you can add this object directly to the json file that contains
+your common examples:
 ```json
 "composite_entities": [
   {
@@ -49,6 +79,10 @@ composite patterns:
     ...
 ]
 ```
+Using a separate file for composite entity patterns is preferred, as rasa
+sometimes strips extra fields from training files (e.g. when training via the
+python API).
+
 Every word starting with a "@" will be considered a placeholder for an entity
 with that name. The component is agnostic to the origin of entities, you can
 use anything that Rasa NLU returns as the "entity" field in its messages. This
@@ -73,49 +107,6 @@ Patterns are regular expressions! You can use patterns like
 to match different variations of entity combinations. Be aware that you may
 need to properly escape your regexes to produce valid JSON files (in case of
 this example, you have to escape the backslashes with another backslash).
-
-An optional configuration variable `composite_patterns_path` can be used to specify the filename where the composite entity patterns are defined:
-
-```yaml
-language: "en_core_web_md"
-
-pipeline:
-- name: "SpacyNLP"
-- name: "SpacyTokenizer"
-- name: "SpacyFeaturizer"
-- name: "CRFEntityExtractor"
-- name: "SklearnIntentClassifier"
-- name: "rasa_composite_entities.CompositeEntityExtractor"
-  composite_patterns_path: "path/to/composite_entity_patterns.json"
-```
-
-`composite_patterns_path` can be defined as the path to the parent training file:
-
-`nlu.json`
-
-```json
-{
-    "rasa_nlu_data": {
-        "composite_entities": [],
-        "common_examples": [],
-        "regex_features" : [],
-        "lookup_tables"  : [],
-        "entity_synonyms": []
-    }
-}
-```
-
-or in as the path to a stand-alone json file:
-
-`composite_entities.json`
-
-```json
-{
-    "composite_entities": []
-}
-```
-
-__Note:__ Either option works, but giving a path to the external file is preferred. 
 
 ## Explanation
 
