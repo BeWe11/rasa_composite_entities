@@ -215,7 +215,7 @@ class CompositeEntityExtractor(EntityExtractor):
                         "confidence": 1.0,
                         "entity": composite_entity["name"],
                         "extractor": "composite",
-                        "contained_entities": contained_entities,
+                        "value": contained_entities,
                     }
                 )
             used_entity_indices += list(
