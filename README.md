@@ -7,6 +7,10 @@ See also [my blog post](https://www.benjaminweigang.com/rasa-nlu-composite-entit
 
 **Works with rasa 1.x!**
 
+## Changelog
+
+* 2020-01-10: The sub-entities contained in a composite entity are now found under a key named `value` instead of `contained_entities`. This change makes the output of the composite entity extractor consistent with other extractors. The major version has been bumped to mark this as a breaking change.
+
 ## Installation
 
 ```bash
@@ -184,7 +188,7 @@ above, the output will be changed to this:
     "confidence": 1.0,
     "entity": "product_with_attributes",
     "extractor": "composite",
-    "contained_entities": [
+    "value": [
       {
         "start": 19,
         "end": 22,
@@ -217,7 +221,7 @@ above, the output will be changed to this:
     "confidence": 1.0,
     "entity": "product_with_attributes",
     "extractor": "composite",
-    "contained_entities": [
+    "value": [
       {
         "start": 46,
         "end": 55,
@@ -271,7 +275,7 @@ $ curl --request POST --header 'content-type: application/x-yml' --data-binary @
 $ curl -XPOST localhost:5005/model/parse -d '{"text": "I am looking for a red shirt with stripes and checkered blue shoes", "project": "test_project"}'
 ```
 
-## Caveats
+## Caveats (does not apply when composite patterns are defined in a separate file)
 
 Rasa NLU strips training files of any custom fields, including our
 "composite_entities" field. For our component to access this information, we
