@@ -74,6 +74,49 @@ to match different variations of entity combinations. Be aware that you may
 need to properly escape your regexes to produce valid JSON files (in case of
 this example, you have to escape the backslashes with another backslash).
 
+An optional configuration variable `composite_patterns_path` can be used to specify the filename where the composite entity patterns are defined:
+
+```yaml
+language: "en_core_web_md"
+
+pipeline:
+- name: "SpacyNLP"
+- name: "SpacyTokenizer"
+- name: "SpacyFeaturizer"
+- name: "CRFEntityExtractor"
+- name: "SklearnIntentClassifier"
+- name: "rasa_composite_entities.CompositeEntityExtractor"
+  composite_patterns_path: "path/to/composite_entity_patterns.json"
+```
+
+`composite_patterns_path` can be defined as the path to the parent training file:
+
+`nlu.json`
+
+```json
+{
+    "rasa_nlu_data": {
+        "composite_entities": [],
+        "common_examples": [],
+        "regex_features" : [],
+        "lookup_tables"  : [],
+        "entity_synonyms": []
+    }
+}
+```
+
+or in as the path to a stand-alone json file:
+
+`composite_entities.json`
+
+```json
+{
+    "composite_entities": []
+}
+```
+
+__Note:__ Either option works, but giving a path to the external file is preferred. 
+
 ## Explanation
 
 Composite entities act as containers that group several entities into logical

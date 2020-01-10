@@ -7,11 +7,21 @@ import warnings
 from rasa.__main__ import create_argument_parser
 from rasa.data import get_core_nlu_files
 from rasa.nlu.extractors import EntityExtractor
-from rasa.nlu.training_data.loading import _guess_format
+import itertools
+import os
+import re
+import tempfile
+import warnings
+
+from rasa.__main__ import create_argument_parser
+from rasa.data import get_core_nlu_files
+from rasa.nlu.extractors import EntityExtractor
+from rasa.nlu.training_data.loading import guess_format
 from rasa.nlu.utils import write_json_to_file
 from rasa.utils.io import list_files, read_json_file
 
 COMPOSITE_ENTITIES_FILE_NAME = "composite_entities.json"
+COMPOSITE_PATTERNS_PATH = "composite_patterns_path"
 ENTITY_PREFIX = "@"
 RASA_NLU = "rasa_nlu"
 
@@ -41,7 +51,7 @@ class CompositeEntityExtractor(EntityExtractor):
             files = list_files(cmdline_args.nlu)
         except AttributeError:
             files = list(get_core_nlu_files(cmdline_args.data)[1])
-        return [file for file in files if _guess_format(file) == RASA_NLU]
+        return [file for file in files if guess_format(file) == RASA_NLU]
 
     @staticmethod
     def _get_train_files_http():
@@ -67,32 +77,47 @@ class CompositeEntityExtractor(EntityExtractor):
         to manually load the file, as rasa strips our custom information.
         """
         try:
-            files = self._get_train_files_cmd()
+            files = [self.component_config[COMPOSITE_PATTERNS_PATH]]
         except:
+            warnings.warn("No composite entity patterns path set in config.yml")
             try:
-                files = self._get_train_files_http()
+                files = self._get_train_files_cmd()
             except:
-                warnings.warn(
-                    "The CompositeEntityExtractor could not load "
-                    "the train file."
-                )
-                return []
+                warnings.warn("No train file specified in cli command.")
+                try:
+                    files = self._get_train_files_http()
+                except:
+                    warnings.warn(
+                        "The CompositeEntityExtractor could not load "
+                        "the train file."
+                    )
+                    return [] 
         composite_entities = []
         for file in files:
             file_content = read_json_file(file)
-            rasa_nlu_data = file_content["rasa_nlu_data"]
-            try:
-                composite_entities_in_file = rasa_nlu_data[
-                    "composite_entities"
-                ]
-            except KeyError:
-                pass
-            else:
-                composite_entities.extend(composite_entities_in_file)
+            if "rasa_nlu_data" in file_content:
+                try:
+                    rasa_nlu_data = file_content.get("rasa_nlu_data")
+                    composite_entities_in_file = rasa_nlu_data[
+                        "composite_entities"
+                    ]
+                except KeyError:
+                    pass
+                else:
+                    composite_entities.extend(composite_entities_in_file)
+            elif "composite_entities" in file_content:
+                try:
+                    composite_entities_in_file = file_content.get(
+                        "composite_entities"
+                    )
+                except KeyError:
+                    pass
+                else:
+                    composite_entities.extend(composite_entities_in_file)
         if not composite_entities:
             warnings.warn(
                 "CompositeEntityExtractor was added to the "
-                "pipeline but no composite entites have been defined."
+                "pipeline but no composite entities have been defined."
             )
         return composite_entities
 
