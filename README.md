@@ -179,6 +179,8 @@ above, the output will be changed to this:
 ```json
 "entities": [
   {
+    "start": 19,
+    "end": 41,
     "confidence": 1.0,
     "entity": "product_with_attributes",
     "extractor": "composite",
@@ -210,6 +212,8 @@ above, the output will be changed to this:
     ]
   },
   {
+    "start": 46,
+    "end": 66,
     "confidence": 1.0,
     "entity": "product_with_attributes",
     "extractor": "composite",

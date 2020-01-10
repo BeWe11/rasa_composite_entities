@@ -235,10 +235,12 @@ class CompositeEntityExtractor(EntityExtractor):
                 )
                 processed_composite_entities.append(
                     {
+                        "start": contained_entities[0]["start"],
+                        "end": contained_entities[-1]["end"],
                         "confidence": 1.0,
                         "entity": composite_entity["name"],
                         "extractor": "composite",
-                        "contained_entities": contained_entities,
+                        "value": contained_entities,
                     }
                 )
             used_entity_indices += list(
