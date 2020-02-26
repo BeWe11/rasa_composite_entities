@@ -192,7 +192,9 @@ class CompositeEntityExtractor(EntityExtractor):
 
     def _find_composite_entities(self, message):
         """Find all composite entities in a message."""
-        entities = message.get("entities", [])
+        entities = list(
+            sorted(message.get("entities", []), key=lambda x: x["start"])
+        )
         if not entities:
             return
 
