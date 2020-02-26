@@ -7,15 +7,6 @@ import warnings
 from rasa.__main__ import create_argument_parser
 from rasa.data import get_core_nlu_files
 from rasa.nlu.extractors import EntityExtractor
-import itertools
-import os
-import re
-import tempfile
-import warnings
-
-from rasa.__main__ import create_argument_parser
-from rasa.data import get_core_nlu_files
-from rasa.nlu.extractors import EntityExtractor
 from rasa.nlu.training_data.loading import guess_format
 from rasa.nlu.utils import write_json_to_file
 from rasa.utils.io import list_files, read_json_file
@@ -79,7 +70,9 @@ class CompositeEntityExtractor(EntityExtractor):
         try:
             files = [self.component_config[COMPOSITE_PATTERNS_PATH]]
         except:
-            warnings.warn("No composite entity patterns path set in config.yml")
+            warnings.warn(
+                "No composite entity patterns path set in config.yml"
+            )
             try:
                 files = self._get_train_files_cmd()
             except:
@@ -91,7 +84,7 @@ class CompositeEntityExtractor(EntityExtractor):
                         "The CompositeEntityExtractor could not load "
                         "the train file."
                     )
-                    return [] 
+                    return []
         composite_entities = []
         for file in files:
             file_content = read_json_file(file)
