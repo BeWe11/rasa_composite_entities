@@ -6,7 +6,7 @@ import warnings
 
 from rasa.__main__ import create_argument_parser
 from rasa.data import get_core_nlu_files
-from rasa.nlu.extractors import EntityExtractor
+from rasa.nlu.extractors.extractor import EntityExtractor
 from rasa.nlu.training_data.loading import guess_format
 from rasa.nlu.utils import write_json_to_file
 from rasa.utils.io import list_files, read_json_file
