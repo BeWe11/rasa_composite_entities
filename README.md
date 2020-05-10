@@ -113,6 +113,31 @@ to match different variations of entity combinations. Be aware that you may
 need to properly escape your regexes to produce valid JSON files (in case of
 this example, you have to escape the backslashes with another backslash).
 
+#### Multiple Hierarchy Levels
+
+Now you can use multiple hierarchies by using the `CompositeEntityExtractor` multiple times in your configuration 
+pipeline. Just provide an additional parameter `composite_entities_file` which should be unique for each instance of the 
+`CompositeEntityExtractor` component in the pipeline.
+
+```yaml
+language: "en_core_web_md"
+
+pipeline:
+- name: "SpacyNLP"
+- name: "SpacyTokenizer"
+- name: "SpacyFeaturizer"
+- name: "CRFEntityExtractor"
+- name: "SklearnIntentClassifier"
+- name: "rasa_composite_entities.CompositeEntityExtractor"
+  composite_patterns_path: "path/to/composite_entity_patterns_level_1.json"
+  composite_entities_file: "hierarchy_level_1.json"
+- name: "rasa_composite_entities.CompositeEntityExtractor"
+  composite_patterns_path: "path/to/composite_entity_patterns_level_2.json"
+  composite_entities_file: "hierarchy_level_2.json"
+```
+Please note that the patterns in the second level of hierarchy should be the combination of the entities detected in the 
+previous level or even including other lower level entities which may not be a part of any of the previous patterns.
+
 ## Explanation
 
 Composite entities act as containers that group several entities into logical

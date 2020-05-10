@@ -11,7 +11,8 @@ from rasa.nlu.training_data.loading import guess_format
 from rasa.nlu.utils import write_json_to_file
 from rasa.utils.io import list_files, read_json_file
 
-COMPOSITE_ENTITIES_FILE_NAME = "composite_entities.json"
+COMPOSITE_ENTITIES_DEFAULT_FILE_NAME = "composite_entities.json"
+COMPOSITE_ENTITIES_FILE = "composite_entities_file"
 COMPOSITE_PATTERNS_PATH = "composite_patterns_path"
 ENTITY_PREFIX = "@"
 RASA_NLU = "rasa_nlu"
@@ -122,6 +123,7 @@ class CompositeEntityExtractor(EntityExtractor):
 
     def persist(self, file_name, dir_name):
         if self.composite_entities:
+            COMPOSITE_ENTITIES_FILE_NAME = self.component_config.get(COMPOSITE_ENTITIES_FILE, COMPOSITE_ENTITIES_DEFAULT_FILE_NAME)
             composite_entities_file = os.path.join(
                 dir_name, COMPOSITE_ENTITIES_FILE_NAME
             )
@@ -141,7 +143,7 @@ class CompositeEntityExtractor(EntityExtractor):
         **kwargs
     ):
         file_name = component_meta.get(
-            "composite_entities_file", COMPOSITE_ENTITIES_FILE_NAME
+            COMPOSITE_ENTITIES_FILE, COMPOSITE_ENTITIES_DEFAULT_FILE_NAME
         )
         composite_entities_file = os.path.join(model_dir, file_name)
         if os.path.isfile(composite_entities_file):
