@@ -1,8 +1,0 @@
-language: "en_core_web_md"
-
-pipeline:
-- name: "SpacyNLP"
-- name: "SpacyTokenizer"
-- name: "SpacyFeaturizer"
-- name: "CRFEntityExtractor"
-- name: "SklearnIntentClassifier"

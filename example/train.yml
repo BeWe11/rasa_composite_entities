@@ -1,0 +1,11 @@
+version: "2.0"
+nlu:
+- intent: greet
+  examples: |
+    - hey
+    - howdy
+    - hey there
+- intent: product_search
+  examples: |
+    - i am looking for a [red](color) [shirt](product) with [stripes]{"entity": "pattern", "value": "striped"} and [checkered](pattern) [blue](color) [shoes]{"entity": "product", "value": "shoe"}
+    - i am searching for a [green](color) [hat](product) with [checkers]{"entity": "pattern", "value": "checkered"} and [striped](pattern) [red](color) [socks](product)

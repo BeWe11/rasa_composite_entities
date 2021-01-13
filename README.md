@@ -25,15 +25,16 @@ After installation, the component can be added your pipeline like any other
 component:
 
 ```yaml
-language: "en_core_web_md"
+language: en
 
 pipeline:
-- name: "SpacyNLP"
-- name: "SpacyTokenizer"
-- name: "SpacyFeaturizer"
-- name: "CRFEntityExtractor"
-- name: "SklearnIntentClassifier"
-- name: "rasa_composite_entities.CompositeEntityExtractor"
+- name: SpacyNLP
+- name: SpacyTokenizer
+- name: SpacyFeaturizer
+- name: DIETClassifier
+  epochs: 10
+- name: EntitySynonymMapper
+- name: rasa_composite_entities.CompositeEntityExtractor
 ```
 
 ## Usage
@@ -54,16 +55,17 @@ Create a JSON file containing the following example structure:
 ```
 You can then specify the path to this variable in you pipeline like this:
 ```yaml
-language: "en_core_web_md"
+language: en
 
 pipeline:
-- name: "SpacyNLP"
-- name: "SpacyTokenizer"
-- name: "SpacyFeaturizer"
-- name: "CRFEntityExtractor"
-- name: "SklearnIntentClassifier"
-- name: "rasa_composite_entities.CompositeEntityExtractor"
-  composite_patterns_path: "path/to/composite_entity_patterns.json"
+- name: SpacyNLP
+- name: SpacyTokenizer
+- name: SpacyFeaturizer
+- name: DIETClassifier
+  epochs: 10
+- name: EntitySynonymMapper
+- name: rasa_composite_entities.CompositeEntityExtractor
+  composite_patterns_path: composite_entity_patterns.json
 ```
 
 Using a separate file for composite entity patterns is necessary, as rasa
@@ -107,54 +109,60 @@ I am looking for a red shirt with stripes and checkered blue shoes.
 Properly trained, Rasa NLU could return entities like this:
 ```json
 "entities": [
-  {
-    "start": 19,
-    "end": 22,
-    "value": "red",
-    "entity": "color",
-    "confidence": 0.9419322376955782,
-    "extractor": "CRFEntityExtractor"
-  },
-  {
-    "start": 23,
-    "end": 28,
-    "value": "shirt",
-    "entity": "product",
-    "confidence": 0.9435936216683031,
-    "extractor": "CRFEntityExtractor"
-  },
-  {
-    "start": 34,
-    "end": 41,
-    "value": "stripes",
-    "entity": "pattern",
-    "confidence": 0.9233923349716401,
-    "extractor": "CRFEntityExtractor"
-  },
-  {
-    "start": 46,
-    "end": 55,
-    "value": "checkered",
-    "entity": "pattern",
-    "confidence": 0.8877627536275875,
-    "extractor": "CRFEntityExtractor"
-  },
-  {
-    "start": 56,
-    "end": 60,
-    "value": "blue",
-    "entity": "color",
-    "confidence": 0.6778344517453893,
-    "extractor": "CRFEntityExtractor"
-  },
-  {
-    "start": 61,
-    "end": 66,
-    "value": "shoes",
-    "entity": "product",
-    "confidence": 0.536797743231954,
-    "extractor": "CRFEntityExtractor"
-  }
+    {
+        "entity": "color",
+        "start": 19,
+        "end": 22,
+        "confidence_entity": 0.4838929772,
+        "value": "red",
+        "extractor": "DIETClassifier"
+    },
+    {
+        "entity": "product",
+        "start": 23,
+        "end": 28,
+        "confidence_entity": 0.5812809467,
+        "value": "shirt",
+        "extractor": "DIETClassifier"
+    },
+    {
+        "entity": "pattern",
+        "start": 34,
+        "end": 41,
+        "confidence_entity": 0.7823174,
+        "value": "striped",
+        "extractor": "DIETClassifier",
+        "processors": [
+            "EntitySynonymMapper"
+        ]
+    },
+    {
+        "entity": "pattern",
+        "start": 46,
+        "end": 55,
+        "confidence_entity": 0.8026408553,
+        "value": "checkered",
+        "extractor": "DIETClassifier"
+    },
+    {
+        "entity": "color",
+        "start": 56,
+        "end": 60,
+        "confidence_entity": 0.5482532978,
+        "value": "blue",
+        "extractor": "DIETClassifier"
+    },
+    {
+        "entity": "product",
+        "start": 61,
+        "end": 66,
+        "confidence_entity": 0.712133944,
+        "value": "shoe",
+        "extractor": "DIETClassifier",
+        "processors": [
+            "EntitySynonymMapper"
+        ]
+    }
 ]
 ```
 
@@ -167,72 +175,78 @@ entity groups. If we add the composite entity patterns as in the usage example
 above, the output will be changed to this:
 ```json
 "entities": [
-  {
-    "start": 19,
-    "end": 41,
-    "confidence": 1.0,
-    "entity": "product_with_attributes",
-    "extractor": "composite",
-    "value": [
-      {
+    {
         "start": 19,
-        "end": 22,
-        "value": "red",
-        "entity": "color",
-        "confidence": 0.9419322376955782,
-        "extractor": "CRFEntityExtractor"
-      },
-      {
-        "start": 23,
-        "end": 28,
-        "value": "shirt",
-        "entity": "product",
-        "confidence": 0.9435936216683031,
-        "extractor": "CRFEntityExtractor"
-      },
-      {
-        "start": 34,
         "end": 41,
-        "value": "stripes",
-        "entity": "pattern",
-        "confidence": 0.9233923349716401,
-        "extractor": "CRFEntityExtractor"
-      }
-    ]
-  },
-  {
-    "start": 46,
-    "end": 66,
-    "confidence": 1.0,
-    "entity": "product_with_attributes",
-    "extractor": "composite",
-    "value": [
-      {
+        "confidence": 1.0,
+        "entity": "product_with_attributes",
+        "extractor": "CompositeEntityExtractor",
+        "value": [
+            {
+                "entity": "color",
+                "start": 19,
+                "end": 22,
+                "confidence_entity": 0.8646154404,
+                "value": "red",
+                "extractor": "DIETClassifier"
+            },
+            {
+                "entity": "product",
+                "start": 23,
+                "end": 28,
+                "confidence_entity": 0.5739765763,
+                "value": "shirt",
+                "extractor": "DIETClassifier"
+            },
+            {
+                "entity": "pattern",
+                "start": 34,
+                "end": 41,
+                "confidence_entity": 0.6623272896,
+                "value": "striped",
+                "extractor": "DIETClassifier",
+                "processors": [
+                    "EntitySynonymMapper"
+                ]
+            }
+        ]
+    },
+    {
         "start": 46,
-        "end": 55,
-        "value": "checkered",
-        "entity": "pattern",
-        "confidence": 0.8877627536275875,
-        "extractor": "CRFEntityExtractor"
-      },
-      {
-        "start": 56,
-        "end": 60,
-        "value": "blue",
-        "entity": "color",
-        "confidence": 0.6778344517453893,
-        "extractor": "CRFEntityExtractor"
-      },
-      {
-        "start": 61,
         "end": 66,
-        "value": "shoes",
-        "entity": "product",
-        "confidence": 0.536797743231954,
-        "extractor": "CRFEntityExtractor"
-      }
-    ]
-  }
+        "confidence": 1.0,
+        "entity": "product_with_attributes",
+        "extractor": "CompositeEntityExtractor",
+        "value": [
+            {
+                "entity": "pattern",
+                "start": 46,
+                "end": 55,
+                "confidence_entity": 0.699033916,
+                "value": "checkered",
+                "extractor": "DIETClassifier"
+            },
+            {
+                "entity": "color",
+                "start": 56,
+                "end": 60,
+                "confidence_entity": 0.8599796891,
+                "value": "blue",
+                "extractor": "DIETClassifier"
+            },
+            {
+                "entity": "product",
+                "start": 61,
+                "end": 66,
+                "confidence_entity": 0.494287014,
+                "value": "shoe",
+                "extractor": "DIETClassifier",
+                "processors": [
+                    "EntitySynonymMapper"
+                ]
+            }
+        ]
+    }
 ]
 ```
 
@@ -242,7 +256,7 @@ See the `example` folder for a minimal example that can be trained and tested.
 To get the output from above, run:
 ```bash
 $ cd example
-$ rasa train nlu --out . --nlu train.json --config config_with_composite.yml
+$ rasa train nlu --out . --nlu train.json --config config.yml
 $ rasa run --enable-api --model .
 $ curl -XPOST localhost:5005/model/parse -d '{"text": "I am looking for a red shirt with stripes and checkered blue shoes"}'
 ```
