@@ -8,7 +8,7 @@ See also [my blog post](https://www.benjaminweigang.com/rasa-nlu-composite-entit
 
 ## Changelog
 
-* 2021-01-13: Updated for Rasa 2.x. Removed old data loading logic, the only way to load patterns is now through the an external JSON file. Renamed extractor in the results from "composite" to "CompositeEntityExtractor".
+* 2021-01-13: Updated for Rasa 2.x. Removed old data loading logic, the only way to load patterns is now through an external JSON file. Renamed extractor in the results from "composite" to "CompositeEntityExtractor".
 * 2020-02-26: Entities are now being sorted by their `start` value before being processed. This prevents problems with other entity extractors like the duckling extractor which might change the entity order.
 * 2020-01-10: The sub-entities contained in a composite entity are now found under a key named `value` instead of `contained_entities`. This change makes the output of the composite entity extractor consistent with other extractors. The major version has been bumped to mark this as a breaking change.
 
