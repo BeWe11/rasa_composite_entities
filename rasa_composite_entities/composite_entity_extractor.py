@@ -8,7 +8,7 @@ from rasa.nlu.utils import write_json_to_file
 from rasa.shared.utils.io import read_json_file
 
 COMPOSITE_ENTITIES_FILE_NAME = "composite_entities.json"
-COMPOSITE_PATTERNS_PATH = "composite_patterns_path"
+COMPOSITE_PATTERNS_PATH_KEY = "composite_patterns_path"
 ENTITY_PREFIX = "@"
 
 
@@ -30,7 +30,7 @@ class CompositeEntityExtractor(EntityExtractor):
         to manually load the file, as rasa strips our custom information.
         """
         try:
-            files = [self.component_config[COMPOSITE_PATTERNS_PATH]]
+            files = [self.component_config[COMPOSITE_PATTERNS_PATH_KEY]]
         except:
             warnings.warn(
                 "No composite entity patterns path set in config.yml"
