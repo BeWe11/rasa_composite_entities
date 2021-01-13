@@ -39,26 +39,16 @@ class CompositeEntityExtractor(EntityExtractor):
             return []
         composite_entities = []
         for file in files:
-            file_content = read_json_file(file)
-            if "rasa_nlu_data" in file_content:
-                try:
-                    rasa_nlu_data = file_content.get("rasa_nlu_data")
-                    composite_entities_in_file = rasa_nlu_data[
-                        "composite_entities"
-                    ]
-                except KeyError:
-                    pass
-                else:
-                    composite_entities.extend(composite_entities_in_file)
-            elif "composite_entities" in file_content:
-                try:
-                    composite_entities_in_file = file_content.get(
-                        "composite_entities"
-                    )
-                except KeyError:
-                    pass
-                else:
-                    composite_entities.extend(composite_entities_in_file)
+            try:
+                file_content = read_json_file(file)
+            except:
+                warnings.warn(
+                    f"Could not load the composite entity patterns file '{file}'."
+                )
+                continue
+            composite_entities_in_file = file_content.get("composite_entities")
+            if composite_entities_in_file:
+                composite_entities.extend(composite_entities_in_file)
         if not composite_entities:
             warnings.warn(
                 "CompositeEntityExtractor was added to the "
@@ -90,7 +80,7 @@ class CompositeEntityExtractor(EntityExtractor):
         model_dir=None,
         model_metadata=None,
         cached_component=None,
-        **kwargs
+        **kwargs,
     ):
         file_name = component_meta.get(
             "composite_entities_file", COMPOSITE_ENTITIES_FILE_NAME
