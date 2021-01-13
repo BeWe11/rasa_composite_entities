@@ -1,25 +1,20 @@
 import itertools
 import os
 import re
-import tempfile
 import warnings
 
-from rasa.__main__ import create_argument_parser
-from rasa.data import get_core_nlu_files
 from rasa.nlu.extractors.extractor import EntityExtractor
-from rasa.nlu.training_data.loading import guess_format
 from rasa.nlu.utils import write_json_to_file
-from rasa.utils.io import list_files, read_json_file
+from rasa.shared.utils.io import read_json_file
 
 COMPOSITE_ENTITIES_FILE_NAME = "composite_entities.json"
 COMPOSITE_PATTERNS_PATH = "composite_patterns_path"
 ENTITY_PREFIX = "@"
-RASA_NLU = "rasa_nlu"
 
 
 class CompositeEntityExtractor(EntityExtractor):
     """A component to add composite entities to Rasa NLU. Composite patterns
-    can be defined in the normal rasa JSON train data file.
+    are extracted from a separate JSON definition file.
     """
 
     name = "CompositeEntityExtractor"
@@ -29,39 +24,6 @@ class CompositeEntityExtractor(EntityExtractor):
     def __init__(self, component_config=None, composite_entities=None):
         super(CompositeEntityExtractor, self).__init__(component_config)
         self.composite_entities = composite_entities or []
-
-    @staticmethod
-    def _get_train_files_cmd():
-        """Get the raw train data by fetching the train file given in the
-        command line arguments to the train script. When training the NLU model
-        explicitly, the training data will be in the "nlu" argument, otherwise
-        it will be in the "data" argument.
-        """
-        cmdline_args = create_argument_parser().parse_args()
-        try:
-            files = list_files(cmdline_args.nlu)
-        except AttributeError:
-            files = list(get_core_nlu_files(cmdline_args.data)[1])
-        return [file for file in files if guess_format(file) == RASA_NLU]
-
-    @staticmethod
-    def _get_train_files_http():
-        """Get the raw train data by fetching the most recent temp train file
-        that rasa has created.
-        """
-        # XXX: Getting the train file through the most recent temp file
-        # introduces a race condition: if during training process A a new
-        # training process B is started before process A reaches this component
-        # (CompositeEntityExtractor), then the train file of process B will be
-        # used in for composite entity extraction in process A.
-        temp_dir = tempfile.gettempdir()
-        train_files = [
-            os.path.join(temp_dir, f)
-            for f in os.listdir(temp_dir)
-            if f.endswith("_training_data")
-        ]
-        assert len(train_files) > 0, "There is no temporary train file."
-        return list(sorted(train_files, key=os.path.getctime))[-1:]
 
     def _read_composite_entities(self):
         """Read the defined composite patterns from the train file. We have
@@ -73,18 +35,7 @@ class CompositeEntityExtractor(EntityExtractor):
             warnings.warn(
                 "No composite entity patterns path set in config.yml"
             )
-            try:
-                files = self._get_train_files_cmd()
-            except:
-                warnings.warn("No train file specified in cli command.")
-                try:
-                    files = self._get_train_files_http()
-                except:
-                    warnings.warn(
-                        "The CompositeEntityExtractor could not load "
-                        "the train file."
-                    )
-                    return []
+            return []
         composite_entities = []
         for file in files:
             file_content = read_json_file(file)

@@ -38,9 +38,7 @@ pipeline:
 
 ## Usage
 
-There are two ways to add composite entity definitions to your training data.
-The first (and prefered!) way is to create a JSON file containing the following
-example structure:
+Create a JSON file containing the following example structure:
 ```json
 {
  "composite_entities": [
@@ -68,25 +66,11 @@ pipeline:
   composite_patterns_path: "path/to/composite_entity_patterns.json"
 ```
 
-Alternatively, you can add this object directly to the json file that contains
-your common examples:
-```json
-"composite_entities": [
-  {
-    "name": "product_with_attributes",
-    "patterns": [
-      "@color @product with @pattern",
-      "@pattern @color @product"
-    ]
-  }
-],
-"common_examples": [
-    ...
-]
-```
-Using a separate file for composite entity patterns is preferred, as rasa
-sometimes strips extra fields from training files (e.g. when training via the
-python API).
+Using a separate file for composite entity patterns is necessary, as rasa
+strips extra fields from training files. In the future, this component might
+use a [custom data
+importer](https://rasa.com/docs/rasa/training-data-importers) to allow giving
+composite patterns directly in the training data file.
 
 Every word starting with a "@" will be considered a placeholder for an entity
 with that name. The component is agnostic to the origin of entities, you can
@@ -262,38 +246,8 @@ $ rasa train nlu --out . --nlu train.json --config config_with_composite.yml
 $ rasa run --enable-api --model .
 $ curl -XPOST localhost:5005/model/parse -d '{"text": "I am looking for a red shirt with stripes and checkered blue shoes"}'
 ```
-If you want to compare this output to the normal Rasa NLU output, use the
-alternative `config_without_composite.yml` config file.
-
-The component also works when training using the server API:
-
-**HTTP training is currently broken because of API changes in rasa 1.x.
-Hopefully, this will soon be fixed!**
-```bash
-$ cd example
-$ rasa run --enable-api --model .
-$ curl --request POST --header 'content-type: application/x-yml' --data-binary @train_http.yml --url 'localhost:5000/train?project=test_project'
-$ curl -XPOST localhost:5005/model/parse -d '{"text": "I am looking for a red shirt with stripes and checkered blue shoes", "project": "test_project"}'
-```
-
-## Caveats (does not apply when composite patterns are defined in a separate file)
-
-Rasa NLU strips training files of any custom fields, including our
-"composite_entities" field. For our component to access this information, we
-have to circumenvent Rasa's train file loading process and get direct access to
-the raw data.
-
-When training through rasa's train script, the train file paths are fetched
-through the command line arguments. When training NLU only, the paths defined
-by the `--nlu` argument are used, otherwise the paths will be taken from the
-`--data` argument.
-
-When training through the HTTP server, we exploit the fact that Rasa NLU
-creates temporary files containing the raw train data. Be aware that this
-creates a possible race condition when multiple training processes are executed
-simultaneously. If a new train process is started before the previous process
-has reached the CompositeEntityExtractor, there is a chance that the wrong
-train data will be picked up.
+If you want to compare this output to the normal Rasa NLU output, just remove
+the definition of the composite extractor in the config file and train again.
 
 ## License
 
