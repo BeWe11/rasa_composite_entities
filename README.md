@@ -256,7 +256,7 @@ See the `example` folder for a minimal example that can be trained and tested.
 To get the output from above, run:
 ```bash
 $ cd example
-$ rasa train nlu --out . --nlu train.json --config config.yml
+$ rasa train nlu --out . --nlu train.yml --config config.yml
 $ rasa run --enable-api --model .
 $ curl -XPOST localhost:5005/model/parse -d '{"text": "I am looking for a red shirt with stripes and checkered blue shoes"}'
 ```
