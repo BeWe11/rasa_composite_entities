@@ -192,7 +192,7 @@ class CompositeEntityExtractor(EntityExtractor):
             return
 
         text_with_entity_names, index_map = self._replace_entity_values(
-            message.text, entities
+            message.get("text", ""), entities
         )
 
         processed_composite_entities = []
