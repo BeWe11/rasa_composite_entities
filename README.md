@@ -1,7 +1,6 @@
 # rasa_composite_entities
 
-A Rasa NLU component for composite entities, developed to be used in the
-Dialogue Engine of [Dialogue Technologies](https://www.dialogue-technologies.com).
+A Rasa NLU component for composite entities.
 
 See also [my blog post](https://www.benjaminweigang.com/rasa-nlu-composite-entities/).
 
