@@ -20,6 +20,7 @@ class CompositeEntityExtractor(EntityExtractor):
     name = "CompositeEntityExtractor"
     requires = ["entities"]
     provides = ["composite_entities"]
+    defaults = {COMPOSITE_PATTERNS_PATH_KEY: "composite_entity_patterns.json"}
 
     def __init__(self, component_config=None, composite_entities=None):
         super(CompositeEntityExtractor, self).__init__(component_config)
