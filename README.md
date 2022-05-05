@@ -4,7 +4,7 @@ A Rasa NLU component for composite entities.
 
 See also [my blog post](https://www.benjaminweigang.com/rasa-nlu-composite-entities/).
 
-**Works with rasa 2.x!**
+**Comptabile with Rasa 2.X, does not work with Rasa 3.X.**
 
 ## Changelog
 
